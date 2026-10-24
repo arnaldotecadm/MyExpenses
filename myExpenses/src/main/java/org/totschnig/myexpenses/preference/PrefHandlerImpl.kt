@@ -22,11 +22,21 @@ open class PrefHandlerImpl(
 
     override fun getString(key: String, defValue: String?): String? {
         val raw = sharedPreferences.getString(key, defValue)
-        return if (isEncryptedCredentialKey(key) && raw != null) {
-            PrefKeyStoreEncryption.decrypt(raw) ?: defValue
-        } else {
-            raw
+        if (isEncryptedCredentialKey(key) && !raw.isNullOrEmpty()) {
+            val decrypted = PrefKeyStoreEncryption.decrypt(raw)
+            if (decrypted != null) {
+                if (!PrefKeyStoreEncryption.isEncrypted(raw)) {
+                    val encrypted = PrefKeyStoreEncryption.encrypt(raw)
+                    if (encrypted != null) {
+                        sharedPreferences.edit { putString(key, encrypted) }
+                        timber.log.Timber.i("Migrated plaintext credential key $key to encrypted format")
+                    }
+                }
+                return decrypted
+            }
+            return defValue
         }
+        return raw
     }
 
     override fun putString(key: String, value: String?) {

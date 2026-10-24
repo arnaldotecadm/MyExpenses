@@ -31,6 +31,7 @@ import org.totschnig.myexpenses.preference.FontSizeDialogPreference
 import org.totschnig.myexpenses.preference.HeaderPreference
 import org.totschnig.myexpenses.preference.LegacyPasswordPreferenceDialogFragmentCompat
 import org.totschnig.myexpenses.preference.PrefHandler
+import org.totschnig.myexpenses.preference.PrefHandlerDataStore
 import org.totschnig.myexpenses.preference.PrefKey
 import org.totschnig.myexpenses.preference.PreferenceDataStore
 import org.totschnig.myexpenses.preference.SecurityQuestionDialogFragmentCompat
@@ -76,6 +77,7 @@ abstract class BasePreferenceFragment : PreferenceFragmentCompat(),
 
     @CallSuper
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+        preferenceManager.preferenceDataStore = PrefHandlerDataStore(prefHandler)
         setPreferencesFromResource(preferencesResId, rootKey)
         headerPreference?.title = preferenceScreen.title
     }
@@ -128,8 +130,8 @@ abstract class BasePreferenceFragment : PreferenceFragmentCompat(),
             inject(this@BasePreferenceFragment)
             inject(viewModel)
         }
-        super.onCreate(savedInstanceState)
         prefHandler.preparePreferenceFragment(this)
+        super.onCreate(savedInstanceState)
     }
 
     override fun onResume() {

@@ -56,6 +56,8 @@ object PrefKeyStoreEncryption {
     }
 
 
+    fun isEncrypted(value: String): Boolean = value.startsWith(FORMAT_PREFIX)
+
     fun decrypt(cipherText: String): String? {
         if (cipherText.isEmpty()) return ""
         if (!cipherText.startsWith(FORMAT_PREFIX)) {
